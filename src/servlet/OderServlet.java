@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.sampled.AudioFormat.Encoding;
 
 import database.JDBC;
 
@@ -18,12 +19,14 @@ public class OderServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		super.doPost(request, resp);
 		
-		
 	}
 
+	
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
+		response.setContentType("text/html");
+	    response.setCharacterEncoding("utf-8");
 		PrintWriter out = response.getWriter();
 		String method = request.getParameter("a");
 		if(method.equals("login")){
@@ -38,9 +41,12 @@ public class OderServlet extends HttpServlet {
 			if(JDBC.accountRegister(phone,pwd))
 			out.print("1");else out.print("0");
 		}else if(method.equals("canteenlist")){
-			
-		}else if(method.equals("foddlist")){
-			
+			out.print(JDBC.getCanteenList().toString());
+		}else if(method.equals("foodlist")){
+			String phone=request.getParameter("canteenPhone");
+			System.out.println(phone);
+			out.print(JDBC.getFoodList(phone).toString());
+			System.out.println(JDBC.getFoodList(phone).toString());
 		}else if(method.equals("login1")){
 			
 		}else if(method.equals("login1")){
@@ -52,7 +58,7 @@ public class OderServlet extends HttpServlet {
 		}
 	}
 	
-	//µÇÂ½º¯Êý
+	//ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½
 	public boolean login(String phone,String password){
 		
 		return true;

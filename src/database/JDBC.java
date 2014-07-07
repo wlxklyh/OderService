@@ -1,78 +1,135 @@
 package database;
+
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONFunction;
+import net.sf.json.JSONObject;
+
+import data.CanteenInfo;
+import data.FoodInfo;
 
 public class JDBC {
-	private static final String DATABASE_ODER="myoder";
-	
-	private static final String TABLE_ACCOUNT="account";
-	private static final String TABLE_CANTEEN="canteen";
-	private static final String TABLE_ODER="oder";
-	private static final String TABLE_FOOD="food";
-	private static final String TABLE_ODERFOOD="oderfood";
-	
-	
-	// ´´½¨¾²Ì¬È«¾Ö±äÁ¿
+	private static final String DATABASE_ODER = "food_order";
+
+	private static final String TABLE_ACCOUNT = "account";
+	private static final String TABLE_CANTEEN = "canteen";
+	private static final String TABLE_ODER = "order";
+	private static final String TABLE_FOOD = "food";
+	private static final String TABLE_ODERFOOD = "orderfood";
+
+	private final static String ERROR="æ•°æ®åº“å‡ºç°é”™è¯¯";
 	static Connection conn;
 	static Statement st;
 
-	public static void main(String[] args) {
-//		insert(); // ²åÈëÌí¼Ó¼ÇÂ¼
-		// update(); //¸üĞÂ¼ÇÂ¼Êı¾İ
-		// delete(); //É¾³ı¼ÇÂ¼
-		String pw = queryAccountPassword("13570233448");
-		System.out.println(pw);
+	public static void main(String[] args) throws UnsupportedEncodingException {
+		// insert(); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¼ï¿½Â¼
+		// update(); //ï¿½ï¿½ï¿½Â¼ï¿½Â¼ï¿½ï¿½ï¿½
+		// delete(); //É¾ï¿½ï¿½ï¿½Â¼
+		// String pw = queryAccountPassword("13570233448");
+		System.out.println(getFoodList("13546899774"));
 	}
 
+
 	
-	public static String queryAccountPassword(String phone){
-		conn = getConnection(); 
+	public static String queryAccountPassword(String phone) {
+		conn = getConnection();
 		String result = "noresult";
 		try {
-			String sql = "SELECT * FROM  account where phone = "+phone;
+			String sql = "SELECT * FROM  account where phone = " + phone;
 			st = (Statement) conn.createStatement();
-			ResultSet rs = st.executeQuery(sql); 
-			while (rs.next()) { // ÅĞ¶ÏÊÇ·ñ»¹ÓĞÏÂÒ»¸öÊı¾İ
-				// ¸ù¾İ×Ö¶ÎÃû»ñÈ¡ÏàÓ¦µÄÖµ
+			ResultSet rs = st.executeQuery(sql);
+			while (rs.next()) {
 				result = rs.getString("password");
 			}
-			conn.close(); // ¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+			conn.close(); 
 		} catch (SQLException e) {
-			System.out.println("²éÑ¯Êı¾İÊ§°Ü");
+			System.out.println(ERROR);
 		}
 		return result;
 	}
-	
-	public static boolean accountRegister(String phone,String password){
+
+	public static boolean accountRegister(String phone, String password) {
 		conn = getConnection();
 		try {
 			String sql = "INSERT INTO account(phone,name, password,oderNum)"
-					+ " VALUES ("+phone+","+""+","+password+","+"0)"; //
-			st = (Statement) conn.createStatement(); // 
+					+ " VALUES (" + phone + "," + "" + "," + password + ","
+					+ "0)"; //
+			st = (Statement) conn.createStatement(); //
 			int count = st.executeUpdate(sql); //
-			if(count==0)return false;
-			else if(count==1)return true;
-			conn.close(); // ¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+			if (count == 0)
+				return false;
+			else if (count == 1)
+				return true;
+			conn.close(); 
 		} catch (SQLException e) {
-			System.out.println("²åÈëÊı¾İÊ§°Ü" + e.getMessage());
+			System.out.println(ERROR + e.getMessage());
 		}
 		return false;
 	}
+
+	public static JSONArray getCanteenList() {
+		List list = new ArrayList();
+		conn = getConnection();
+		try {
+			String sql = "SELECT * FROM  canteen";
+			st = (Statement) conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			while (rs.next()) {
+				CanteenInfo can = new CanteenInfo();
+				can.setPhone(rs.getString("phone"));
+				can.setName(rs.getString("name"));
+				System.out.println(rs.getString("name"));
+				can.setLatitude(rs.getFloat("x"));
+				can.setLongitude(rs.getFloat("y"));
+				list.add(can);
+			}
+			conn.close(); 
+		} catch (SQLException e) {
+			System.out.println(ERROR);
+		}
+		JSONArray jsonObj1 = JSONArray.fromObject(list);
+		return jsonObj1;
+	}
 	
 	
-	
-	
-	
-	
-	
-	
-	public static String getCanteenList(String phone){
-		
-		
-		return "";
+	public static JSONArray getFoodList(String phone) {
+		List list = new ArrayList();
+		conn = getConnection();
+		try {
+			String sql = "SELECT * FROM  food where canteenPhone='"+phone+"'";
+			st = (Statement) conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			while (rs.next()) {
+				FoodInfo food = new FoodInfo();
+				
+				food.setFoodId(rs.getInt("foodid"));
+				food.setCanteenPhone(rs.getString("canteenPhone"));
+				food.setName(rs.getString("name"));
+				food.setIntroduce(rs.getString("introduce"));
+				food.setStarNum(rs.getInt("foodid"));
+				food.setMonthSale(rs.getInt("monthSale"));
+				food.setPrice(rs.getDouble("price"));
+				
+				
+				list.add(food);
+			}
+			conn.close(); 
+		} catch (SQLException e) {
+			System.out.println(ERROR+e.getMessage());
+		}
+		JSONArray jsonObj1 = JSONArray.fromObject(list);
+		return jsonObj1;
 	}
 	
 	
@@ -82,60 +139,81 @@ public class JDBC {
 	
 	
 	
-	/* ²åÈëÊı¾İ¼ÇÂ¼£¬²¢Êä³ö²åÈëµÄÊı¾İ¼ÇÂ¼Êı */
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
 	public static void insert() {
 
-		conn = getConnection(); // Ê×ÏÈÒª»ñÈ¡Á¬½Ó£¬¼´Á¬½Óµ½Êı¾İ¿â
+		conn = getConnection(); 
 
 		try {
 			String sql = "INSERT INTO staff(ID,name, age)"
-					+ " VALUES (12,'Tom1', 32)"; // ²åÈëÊı¾İµÄsqlÓï¾ä
+					+ " VALUES (12,'Tom1', 32)";
 
-			st = (Statement) conn.createStatement(); // ´´½¨ÓÃÓÚÖ´ĞĞ¾²Ì¬sqlÓï¾äµÄStatement¶ÔÏó
+			st = (Statement) conn.createStatement(); 
 
-			int count = st.executeUpdate(sql); // Ö´ĞĞ²åÈë²Ù×÷µÄsqlÓï¾ä£¬²¢·µ»Ø²åÈëÊı¾İµÄ¸öÊı
+			int count = st.executeUpdate(sql); 
 
-			System.out.println("Ïòstaff±íÖĞ²åÈë " + count + " ÌõÊı¾İ"); // Êä³ö²åÈë²Ù×÷µÄ´¦Àí½á¹û
+			System.out.println("ï¿½ï¿½staffï¿½ï¿½ï¿½Ğ²ï¿½ï¿½ï¿½ " + count + " ï¿½ï¿½ï¿½ï¿½ï¿½");
 
-			conn.close(); // ¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+			conn.close(); 
 
 		} catch (SQLException e) {
-			System.out.println("²åÈëÊı¾İÊ§°Ü" + e.getMessage());
+			System.out.println(ERROR + e.getMessage());
 		}
 	}
 
-	/* ¸üĞÂ·ûºÏÒªÇóµÄ¼ÇÂ¼£¬²¢·µ»Ø¸üĞÂµÄ¼ÇÂ¼ÊıÄ¿ */
 	public static void update() {
-		conn = getConnection(); // Í¬ÑùÏÈÒª»ñÈ¡Á¬½Ó£¬¼´Á¬½Óµ½Êı¾İ¿â
+		conn = getConnection(); 
 		try {
-			String sql = "update staff set wage='2200' where name = 'lucy'";// ¸üĞÂÊı¾İµÄsqlÓï¾ä
+			String sql = "update staff set wage='2200' where name = 'lucy'";
 
-			st = (Statement) conn.createStatement(); // ´´½¨ÓÃÓÚÖ´ĞĞ¾²Ì¬sqlÓï¾äµÄStatement¶ÔÏó£¬stÊô¾Ö²¿±äÁ¿
+			st = (Statement) conn.createStatement(); 
 
-			int count = st.executeUpdate(sql);// Ö´ĞĞ¸üĞÂ²Ù×÷µÄsqlÓï¾ä£¬·µ»Ø¸üĞÂÊı¾İµÄ¸öÊı
+			int count = st.executeUpdate(sql);
 
-			System.out.println("staff±íÖĞ¸üĞÂ " + count + " ÌõÊı¾İ"); // Êä³ö¸üĞÂ²Ù×÷µÄ´¦Àí½á¹û
+			System.out.println("staf" + count + " ï¿½ï¿½ï¿½ï¿½ï¿½"); 
 
-			conn.close(); // ¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+			conn.close(); //
 
 		} catch (SQLException e) {
-			System.out.println("¸üĞÂÊı¾İÊ§°Ü");
+			System.out.println(ERROR);
 		}
 	}
 
-	/* ²éÑ¯Êı¾İ¿â£¬Êä³ö·ûºÏÒªÇóµÄ¼ÇÂ¼µÄÇé¿ö */
 	public static void query() {
 
-		conn = getConnection(); // Í¬ÑùÏÈÒª»ñÈ¡Á¬½Ó£¬¼´Á¬½Óµ½Êı¾İ¿â
+		conn = getConnection(); 
 		try {
-			String sql = "select * from staff"; // ²éÑ¯Êı¾İµÄsqlÓï¾ä
-			st = (Statement) conn.createStatement(); // ´´½¨ÓÃÓÚÖ´ĞĞ¾²Ì¬sqlÓï¾äµÄStatement¶ÔÏó£¬stÊô¾Ö²¿±äÁ¿
+			String sql = "select * from staff"; 
+			st = (Statement) conn.createStatement(); 
 
-			ResultSet rs = st.executeQuery(sql); // Ö´ĞĞsql²éÑ¯Óï¾ä£¬·µ»Ø²éÑ¯Êı¾İµÄ½á¹û¼¯
-			System.out.println("×îºóµÄ²éÑ¯½á¹ûÎª£º");
-			while (rs.next()) { // ÅĞ¶ÏÊÇ·ñ»¹ÓĞÏÂÒ»¸öÊı¾İ
+			ResultSet rs = st.executeQuery(sql); 
 
-				// ¸ù¾İ×Ö¶ÎÃû»ñÈ¡ÏàÓ¦µÄÖµ
+			while (rs.next()) {
 				String name = rs.getString("name");
 				int age = rs.getInt("age");
 				String sex = rs.getString("sex");
@@ -143,40 +221,39 @@ public class JDBC {
 				String depart = rs.getString("depart");
 				String worklen = rs.getString("worklen");
 				String wage = rs.getString("wage");
-
-				// Êä³ö²éµ½µÄ¼ÇÂ¼µÄ¸÷¸ö×Ö¶ÎµÄÖµ
+						
+						
+						
 				System.out.println(name + " " + age + " " + sex + " " + address
 						+ " " + depart + " " + worklen + " " + wage);
 
 			}
-			conn.close(); // ¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+			conn.close(); 
 
 		} catch (SQLException e) {
-			System.out.println("²éÑ¯Êı¾İÊ§°Ü");
+			System.out.println(ERROR);
 		}
 	}
 
-	/* É¾³ı·ûºÏÒªÇóµÄ¼ÇÂ¼£¬Êä³öÇé¿ö */
 	public static void delete() {
 
-		conn = getConnection(); // Í¬ÑùÏÈÒª»ñÈ¡Á¬½Ó£¬¼´Á¬½Óµ½Êı¾İ¿â
+		conn = getConnection(); 
 		try {
-			String sql = "delete from staff  where name = 'lili'";// É¾³ıÊı¾İµÄsqlÓï¾ä
-			st = (Statement) conn.createStatement(); // ´´½¨ÓÃÓÚÖ´ĞĞ¾²Ì¬sqlÓï¾äµÄStatement¶ÔÏó£¬stÊô¾Ö²¿±äÁ¿
+			String sql = "delete from staff  where name = 'lili'";
+			st = (Statement) conn.createStatement(); 
 
-			int count = st.executeUpdate(sql);// Ö´ĞĞsqlÉ¾³ıÓï¾ä£¬·µ»ØÉ¾³ıÊı¾İµÄÊıÁ¿
+			int count = st.executeUpdate(sql);
 
-			System.out.println("staff±íÖĞÉ¾³ı " + count + " ÌõÊı¾İ\n"); // Êä³öÉ¾³ı²Ù×÷µÄ´¦Àí½á¹û
+			System.out.println("staffï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ " + count + " ï¿½ï¿½ï¿½ï¿½ï¿½\n"); 
 
-			conn.close(); // ¹Ø±ÕÊı¾İ¿âÁ¬½Ó
+			conn.close(); 
 
 		} catch (SQLException e) {
-			System.out.println("É¾³ıÊı¾İÊ§°Ü");
+			System.out.println("É¾ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½");
 		}
 
 	}
 
-	/* »ñÈ¡Êı¾İ¿âÁ¬½ÓµÄº¯Êı */
 	public static Connection getConnection() {
 		try {
 			Class.forName("org.gjt.mm.mysql.Driver").newInstance();
@@ -190,8 +267,10 @@ public class JDBC {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String url = "jdbc:mysql://localhost/myoder?user=root&password=&useUnicode=true&characterEncoding=8859_1";
-		// myDBÎªÊı¾İ¿âÃû
+		String url = "jdbc:mysql://localhost/"
+				+ DATABASE_ODER
+				+ "?user=root&password=scut623448&useUnicode=true&characterEncoding=gb2312";
+		// myDBÎªï¿½ï¿½İ¿ï¿½ï¿½ï¿½
 		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(url);
@@ -199,6 +278,8 @@ public class JDBC {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return conn; // ·µ»ØËù½¨Á¢µÄÊı¾İ¿âÁ¬½Ó
+		return conn; //
 	}
+
+
 }
