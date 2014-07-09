@@ -39,21 +39,40 @@ public class JDBC {
 	static Statement st;
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		// String str =
-		// "[{\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderNum\":2},{\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":3,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderNum\":0}]";
-		// JSONArray jsonArray = JSONArray.fromObject(str);
-		// for(int i=0;i<jsonArray.size();i++){
-		// JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-		// if(jsonObject.getInt("orderNum")>0){
-		// insertOrderFood(jsonObject.getInt("foodId"),jsonObject.getInt("orderNum"));
-		// }
-		// if(i==0){
-		// insertOrder(jsonObject.getString("canteenPhone"),"");
-		// }
-		// System.out.println(""+jsonObject);
-		// }
+//		String str = "[{\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderNum\":2},{\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":3,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderNum\":0}]";
+//		JSONArray jsonArray = JSONArray.fromObject(str);
+//		for (int i = 0; i < jsonArray.size(); i++) {
+//			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+//			if (i == 0) {
+//				insertOrder(jsonObject.getString("canteenPhone"), "");
+//			}
+//			if (jsonObject.getInt("orderNum") > 0) {
+//				insertOrderFood(jsonObject.getInt("foodId"),
+//						jsonObject.getInt("orderNum"));
+//			}
+//			System.out.println("" + jsonObject);
+//		}
+		
+		String str = "[{\"orderNum\":1,\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":3,\"canteenPhone\":\"13"
+		+"546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"}]";
+		JSONArray jsonArray = JSONArray.fromObject(str);
+		for (int i = 0; i < jsonArray.size(); i++) {
+			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+			String accountPhone = jsonObject.getString("accountPhone");
+			String orderID = jsonObject.getString("orderId");
+			
+			if (i == 0) {
+				insertOrder(jsonObject.getString("canteenPhone"), accountPhone,orderID);
+			}
+			if (jsonObject.getInt("orderNum") > 0) {
+				insertOrderFood(jsonObject.getInt("foodId"),
+						jsonObject.getInt("orderNum"),orderID);
+			}
+			System.out.println("" + jsonObject);
+		}
 
 	}
+	
 
 	public static String queryAccountPassword(String phone) {
 		conn = getConnection();
@@ -69,7 +88,7 @@ public class JDBC {
 		} catch (SQLException e) {
 			System.out.println(ERROR);
 		}
-		
+
 		return result;
 	}
 
@@ -78,7 +97,7 @@ public class JDBC {
 		try {
 			String sql = "INSERT INTO account(phone,name, password,orderNum)"
 					+ " VALUES (" + phone + "," + "null" + ",'" + password
-					+ "'," + "0)"; //
+					+ "'," + "0)"; 
 			System.out.println(sql);
 			st = (Statement) conn.createStatement(); //
 			int count = st.executeUpdate(sql); //
@@ -147,12 +166,11 @@ public class JDBC {
 		return jsonObj1;
 	}
 
-	public static boolean insertOrderFood(int foodId, int orderNum) {
+	public static boolean insertOrderFood(int foodId, int orderNum,String OrderId) {
 		conn = getConnection();
-		// rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
 		try {
-			String sql = "INSERT INTO orderfood(foodID,num)" + " VALUES ("
-					+ foodId + "," + orderNum + ")";
+			String sql = "INSERT INTO orderfood(foodID,num,OrderID)" + " VALUES ("
+					+ foodId + "," + orderNum +","+ OrderId+")";
 			System.out.println(sql);
 			st = (Statement) conn.createStatement(); //
 			int count = st.executeUpdate(sql); //
@@ -168,27 +186,34 @@ public class JDBC {
 		return false;
 	}
 
-	public static boolean insertOrder(String canteenPhone, String accountPhone) {
+	public static boolean  insertOrder(String canteenPhone, String accountPhone, String orderId) {
 		conn = getConnection();
-		// rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
 		try {
-			String sql = "INSERT INTO order(canteenPhone,accountPhone)"
-					+ " VALUES (" + canteenPhone + "," + accountPhone + ")";
+			String sql = "INSERT INTO `order`(`accountPhone`, `canteentPhone`, `orderID`)"
+					+ " VALUES (" + canteenPhone + "," + accountPhone +"," + orderId + ")";
 			System.out.println(sql);
-			st = (Statement) conn.createStatement(); //
-			int count = st.executeUpdate(sql); //
+			st = (Statement) conn.createStatement();
+			int count = st.executeUpdate(sql);
 			if (count == 0)
 				return false;
-			else if (count == 1)
+			else if (count == 1){
+				DataChangeManager.getDataManager().DataIseart();
 				return true;
+			}
 			conn.close();
 		} catch (SQLException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
-		DataChangeManager.getDataManager().DataIseart();
 		return false;
 	}
 
+	
+	
+	
+	
+	
+	
+	
 	public static void insert() {
 
 		conn = getConnection();

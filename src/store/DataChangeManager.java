@@ -14,6 +14,7 @@ public class DataChangeManager {
 		return sDataChangeManager;
 	}
 	public void registerListener(DataChangeListener l){
+		System.out.println("registerListener");
 		DataChangeListenerList.add(l);
 	}
 	public void unRegisterListener(DataChangeListener l){

@@ -12,13 +12,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sound.sampled.AudioFormat.Encoding;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+import ui.CanteenManager;
+
 import music.MusicPlay;
 
 import database.JDBC;
 
 
 public class OderServlet extends HttpServlet {
-	
+	private  CanteenManager manager;
+	public OderServlet(){
+		manager = CanteenManager.getManager();
+		if(!manager.isVisible())
+			manager.setVisible(true);
+	}
 	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -32,8 +42,25 @@ public class OderServlet extends HttpServlet {
 		System.out.println("doPost"+tempStr);
 
 		String jsonString=request.getParameter("jsonString");
-		String tag=URLDecoder.decode(jsonString,"Utf-8");
-		System.out.println(tag);
+		String str=URLDecoder.decode(jsonString,"Utf-8");
+		System.out.println(str);
+		
+		JSONArray jsonArray = JSONArray.fromObject(str);
+		for (int i = 0; i < jsonArray.size(); i++) {
+			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+			String accountPhone = jsonObject.getString("accountPhone");
+			String orderID = jsonObject.getString("orderId");
+			
+			if (i == 0) {
+				JDBC.insertOrder(jsonObject.getString("canteenPhone"), accountPhone,orderID);
+			}
+			if (jsonObject.getInt("orderNum") > 0) {
+				JDBC.insertOrderFood(jsonObject.getInt("foodId"),
+						jsonObject.getInt("orderNum"),orderID);
+			}
+			System.out.println("" + jsonObject);
+		}
+		
 		
 		MusicPlay.playOrder();
 	}

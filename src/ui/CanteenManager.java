@@ -7,14 +7,19 @@
 
 package ui;
 
+import store.DataChangeListener;
+import store.DataChangeManager;
+
 /**
  *
  * @author  __USER__
  */
-public class CanteenManager extends javax.swing.JFrame {
+public class CanteenManager extends javax.swing.JFrame implements
+		DataChangeListener {
 
 	/** Creates new form CanteenManager */
 	public CanteenManager() {
+		DataChangeManager.getDataManager().registerListener(this);
 		System.out.println("CanteenManager");
 		initComponents();
 	}
@@ -40,6 +45,13 @@ public class CanteenManager extends javax.swing.JFrame {
 		jLabel2 = new javax.swing.JLabel();
 		jScrollPane3 = new javax.swing.JScrollPane();
 		jTextPane2 = new javax.swing.JTextPane();
+		jLabel3 = new javax.swing.JLabel();
+		jLabel4 = new javax.swing.JLabel();
+		jScrollPane4 = new javax.swing.JScrollPane();
+		jTextPane3 = new javax.swing.JTextPane();
+		jScrollPane5 = new javax.swing.JScrollPane();
+		jTextPane4 = new javax.swing.JTextPane();
+		jButton5 = new javax.swing.JButton();
 
 		javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(
 				jDialog1.getContentPane());
@@ -114,11 +126,7 @@ public class CanteenManager extends javax.swing.JFrame {
 		jToolBar1.add(jButton4);
 
 		jTable1.setBackground(new java.awt.Color(204, 255, 204));
-		jTable1.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] { { null, null, null, null },
-						{ null, null, null, null }, { null, null, null, null },
-						{ null, null, null, null } }, new String[] { "Title 1",
-						"Title 2", "Title 3", "Title 4" }));
+		jTable1.setModel(mTableModal);
 		jScrollPane1.setViewportView(jTable1);
 
 		jTextPane1.setEditable(false);
@@ -135,6 +143,28 @@ public class CanteenManager extends javax.swing.JFrame {
 		jTextPane2.setEditable(false);
 		jScrollPane3.setViewportView(jTextPane2);
 
+		jLabel3.setBackground(new java.awt.Color(255, 255, 102));
+		jLabel3.setFont(new java.awt.Font("微软雅黑", 0, 18));
+		jLabel3.setText("\u5e97\u5bb6\u540d\u5b57");
+
+		jLabel4.setBackground(new java.awt.Color(255, 255, 102));
+		jLabel4.setFont(new java.awt.Font("微软雅黑", 0, 18));
+		jLabel4.setText("\u5e97\u5bb6\u5bc6\u7801");
+
+		jTextPane3.setEditable(false);
+		jScrollPane4.setViewportView(jTextPane3);
+
+		jTextPane4.setEditable(false);
+		jScrollPane5.setViewportView(jTextPane4);
+
+		jButton5.setFont(new java.awt.Font("微软雅黑", 0, 24));
+		jButton5.setText("\u767b\u5f55");
+		jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+			public void mouseClicked(java.awt.event.MouseEvent evt) {
+				jButton5MouseClicked(evt);
+			}
+		});
+
 		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(
 				jPanel1);
 		jPanel1.setLayout(jPanel1Layout);
@@ -150,48 +180,96 @@ public class CanteenManager extends javax.swing.JFrame {
 												javax.swing.GroupLayout.PREFERRED_SIZE,
 												475,
 												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(
 												jPanel1Layout
 														.createParallelGroup(
 																javax.swing.GroupLayout.Alignment.LEADING)
-														.addComponent(
-																jToolBar1,
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																javax.swing.GroupLayout.PREFERRED_SIZE,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																javax.swing.GroupLayout.PREFERRED_SIZE)
-														.addGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING,
-																jPanel1Layout
-																		.createSequentialGroup()
-																		.addComponent(
-																				jLabel1,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				111,
-																				Short.MAX_VALUE)
-																		.addPreferredGap(
-																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																		.addComponent(
-																				jScrollPane2,
-																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				117,
-																				javax.swing.GroupLayout.PREFERRED_SIZE))
 														.addGroup(
 																jPanel1Layout
 																		.createSequentialGroup()
-																		.addComponent(
-																				jLabel2,
-																				javax.swing.GroupLayout.DEFAULT_SIZE,
-																				111,
-																				Short.MAX_VALUE)
 																		.addPreferredGap(
 																				javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																		.addGroup(
+																				jPanel1Layout
+																						.createParallelGroup(
+																								javax.swing.GroupLayout.Alignment.LEADING)
+																						.addGroup(
+																								javax.swing.GroupLayout.Alignment.TRAILING,
+																								jPanel1Layout
+																										.createSequentialGroup()
+																										.addComponent(
+																												jLabel3,
+																												javax.swing.GroupLayout.DEFAULT_SIZE,
+																												175,
+																												Short.MAX_VALUE)
+																										.addPreferredGap(
+																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																										.addComponent(
+																												jScrollPane5,
+																												javax.swing.GroupLayout.PREFERRED_SIZE,
+																												117,
+																												javax.swing.GroupLayout.PREFERRED_SIZE))
+																						.addGroup(
+																								jPanel1Layout
+																										.createSequentialGroup()
+																										.addComponent(
+																												jLabel4,
+																												javax.swing.GroupLayout.DEFAULT_SIZE,
+																												175,
+																												Short.MAX_VALUE)
+																										.addPreferredGap(
+																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																										.addComponent(
+																												jScrollPane4,
+																												javax.swing.GroupLayout.PREFERRED_SIZE,
+																												117,
+																												javax.swing.GroupLayout.PREFERRED_SIZE))
+																						.addGroup(
+																								javax.swing.GroupLayout.Alignment.TRAILING,
+																								jPanel1Layout
+																										.createSequentialGroup()
+																										.addComponent(
+																												jLabel1,
+																												javax.swing.GroupLayout.DEFAULT_SIZE,
+																												175,
+																												Short.MAX_VALUE)
+																										.addPreferredGap(
+																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																										.addComponent(
+																												jScrollPane2,
+																												javax.swing.GroupLayout.PREFERRED_SIZE,
+																												117,
+																												javax.swing.GroupLayout.PREFERRED_SIZE))
+																						.addGroup(
+																								jPanel1Layout
+																										.createSequentialGroup()
+																										.addComponent(
+																												jLabel2,
+																												javax.swing.GroupLayout.DEFAULT_SIZE,
+																												175,
+																												Short.MAX_VALUE)
+																										.addPreferredGap(
+																												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																										.addComponent(
+																												jScrollPane3,
+																												javax.swing.GroupLayout.PREFERRED_SIZE,
+																												117,
+																												javax.swing.GroupLayout.PREFERRED_SIZE))
+																						.addComponent(
+																								jToolBar1,
+																								javax.swing.GroupLayout.PREFERRED_SIZE,
+																								javax.swing.GroupLayout.DEFAULT_SIZE,
+																								javax.swing.GroupLayout.PREFERRED_SIZE)))
+														.addGroup(
+																jPanel1Layout
+																		.createSequentialGroup()
+																		.addGap(17,
+																				17,
+																				17)
 																		.addComponent(
-																				jScrollPane3,
+																				jButton5,
 																				javax.swing.GroupLayout.PREFERRED_SIZE,
-																				117,
+																				202,
 																				javax.swing.GroupLayout.PREFERRED_SIZE)))
 										.addContainerGap()));
 		jPanel1Layout
@@ -205,6 +283,47 @@ public class CanteenManager extends javax.swing.JFrame {
 						.addGroup(
 								jPanel1Layout
 										.createSequentialGroup()
+										.addGroup(
+												jPanel1Layout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.TRAILING,
+																false)
+														.addComponent(
+																jLabel3,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																Short.MAX_VALUE)
+														.addComponent(
+																jScrollPane5,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addGroup(
+												jPanel1Layout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.TRAILING,
+																false)
+														.addComponent(
+																jLabel4,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																Short.MAX_VALUE)
+														.addComponent(
+																jScrollPane4,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+										.addComponent(
+												jButton5,
+												javax.swing.GroupLayout.PREFERRED_SIZE,
+												39,
+												javax.swing.GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addComponent(
 												jToolBar1,
 												javax.swing.GroupLayout.PREFERRED_SIZE,
@@ -223,7 +342,10 @@ public class CanteenManager extends javax.swing.JFrame {
 																javax.swing.GroupLayout.DEFAULT_SIZE,
 																Short.MAX_VALUE)
 														.addComponent(
-																jScrollPane2))
+																jScrollPane2,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																javax.swing.GroupLayout.DEFAULT_SIZE,
+																javax.swing.GroupLayout.PREFERRED_SIZE))
 										.addPreferredGap(
 												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
 										.addGroup(
@@ -247,19 +369,28 @@ public class CanteenManager extends javax.swing.JFrame {
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout.createParallelGroup(
 				javax.swing.GroupLayout.Alignment.LEADING).addComponent(
-				jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 715,
-				javax.swing.GroupLayout.PREFERRED_SIZE));
+				jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
+				javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 		layout.setVerticalGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addComponent(
-				jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE,
-				javax.swing.GroupLayout.DEFAULT_SIZE,
-				javax.swing.GroupLayout.PREFERRED_SIZE));
+				javax.swing.GroupLayout.Alignment.LEADING).addGroup(
+				layout.createSequentialGroup()
+						.addComponent(jPanel1,
+								javax.swing.GroupLayout.PREFERRED_SIZE,
+								javax.swing.GroupLayout.DEFAULT_SIZE,
+								javax.swing.GroupLayout.PREFERRED_SIZE)
+						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE,
+								Short.MAX_VALUE)));
 
 		bindingGroup.bind();
 
 		pack();
 	}// </editor-fold>
 	//GEN-END:initComponents
+
+	private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {
+		// TODO add your handling code here:
+		mTableModal.addRow(new String[] { "食物名字", "食物数量", "食物单价", "食物剩余" });
+	}
 
 	private void jButton3MouseClicked(java.awt.event.MouseEvent evt) {
 		// TODO add your handling code here:
@@ -285,9 +416,15 @@ public class CanteenManager extends javax.swing.JFrame {
 	public static void main(String args[]) {
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				new CanteenManager().setVisible(true);
+				getManager().setVisible(true);
 			}
 		});
+	}
+
+	private static CanteenManager manager = new CanteenManager();
+
+	public static CanteenManager getManager() {
+		return manager;
 	}
 
 	//GEN-BEGIN:variables
@@ -296,25 +433,47 @@ public class CanteenManager extends javax.swing.JFrame {
 	private javax.swing.JButton jButton2;
 	private javax.swing.JButton jButton3;
 	private javax.swing.JButton jButton4;
+	private javax.swing.JButton jButton5;
 	private javax.swing.JDialog jDialog1;
 	private javax.swing.JDialog jDialog2;
 	private javax.swing.JLabel jLabel1;
 	private javax.swing.JLabel jLabel2;
+	private javax.swing.JLabel jLabel3;
+	private javax.swing.JLabel jLabel4;
 	private javax.swing.JPanel jPanel1;
 	private javax.swing.JScrollPane jScrollPane1;
 	private javax.swing.JScrollPane jScrollPane2;
 	private javax.swing.JScrollPane jScrollPane3;
+	private javax.swing.JScrollPane jScrollPane4;
+	private javax.swing.JScrollPane jScrollPane5;
 	private javax.swing.JTable jTable1;
 	private javax.swing.JTextPane jTextPane1;
 	private javax.swing.JTextPane jTextPane2;
+	private javax.swing.JTextPane jTextPane3;
+	private javax.swing.JTextPane jTextPane4;
 	private javax.swing.JToolBar jToolBar1;
 	private org.jdesktop.beansbinding.BindingGroup bindingGroup;
 	// End of variables declaration//GEN-END:variables
 
 	private javax.swing.table.DefaultTableModel mTableModal = new javax.swing.table.DefaultTableModel(
-			new Object[][] { { null, null, null, null },
-					{ null, null, null, null }, { null, null, null, null },
-					{ null, null, null, null } }, new String[] { "食物名字",
+			null, new String[] { "食物名字",
 					"食物数量", "食物单价", "食物剩余" });
+
+	@Override
+	public void DataIseart() {
+		mTableModal.addRow(new String[] { "食物名字", "食物数量", "食物单价", "食物剩余" });
+	}
+
+	@Override
+	public void DataUpdate() {
+		// TODO Auto-generated method stub
+		mTableModal.addRow(new String[] { "食物名字", "食物数量", "食物单价", "食物剩余" });
+	}
+
+	@Override
+	public void DataDelete() {
+		// TODO Auto-generated method stub
+		mTableModal.addRow(new String[] { "食物名字", "食物数量", "食物单价", "食物剩余" });
+	}
 
 }
