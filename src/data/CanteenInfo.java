@@ -10,8 +10,6 @@ public class CanteenInfo {
 		this.phone = phone;
 		this.latitude = mLatitude;
 		this.longitude = mLongitude;
-		
-		
 	}
 	
 	public CanteenInfo() {

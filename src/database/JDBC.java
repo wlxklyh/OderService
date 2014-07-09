@@ -91,6 +91,25 @@ public class JDBC {
 
 		return result;
 	}
+	
+	//没有返回0，有返回非零
+	public static int queryCanteenAccountPassword(String phone, String passwd) {
+		conn = getConnection();
+		int result = 0;
+		try {
+			String sql = "SELECT * FROM  canteen where phone = '" + 
+					phone + "' and passwd = '" + passwd +"'";
+			st = (Statement) conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if (rs.next()) {
+				result = 1;
+			}
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR);
+		}
+		return result;
+	}
 
 	public static boolean accountRegister(String phone, String password) {
 		conn = getConnection();
