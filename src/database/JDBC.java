@@ -1,5 +1,7 @@
 package database;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.sql.Connection;
@@ -11,6 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import store.DataChangeManager;
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONFunction;
@@ -28,20 +34,27 @@ public class JDBC {
 	private static final String TABLE_FOOD = "food";
 	private static final String TABLE_ODERFOOD = "orderfood";
 
-	private final static String ERROR="数据库出现错误";
+	private final static String ERROR = "数据库出现错误";
 	static Connection conn;
 	static Statement st;
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-		// insert(); // ������Ӽ�¼
-		// update(); //���¼�¼���
-		// delete(); //ɾ���¼
-		// String pw = queryAccountPassword("13570233448");
-		System.out.println(getFoodList("13546899774"));
+		// String str =
+		// "[{\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderNum\":2},{\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":3,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderNum\":0}]";
+		// JSONArray jsonArray = JSONArray.fromObject(str);
+		// for(int i=0;i<jsonArray.size();i++){
+		// JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+		// if(jsonObject.getInt("orderNum")>0){
+		// insertOrderFood(jsonObject.getInt("foodId"),jsonObject.getInt("orderNum"));
+		// }
+		// if(i==0){
+		// insertOrder(jsonObject.getString("canteenPhone"),"");
+		// }
+		// System.out.println(""+jsonObject);
+		// }
+
 	}
 
-
-	
 	public static String queryAccountPassword(String phone) {
 		conn = getConnection();
 		String result = "noresult";
@@ -52,29 +65,32 @@ public class JDBC {
 			while (rs.next()) {
 				result = rs.getString("password");
 			}
-			conn.close(); 
+			conn.close();
 		} catch (SQLException e) {
 			System.out.println(ERROR);
 		}
+		
 		return result;
 	}
 
 	public static boolean accountRegister(String phone, String password) {
 		conn = getConnection();
 		try {
-			String sql = "INSERT INTO account(phone,name, password,oderNum)"
-					+ " VALUES (" + phone + "," + "" + "," + password + ","
-					+ "0)"; //
+			String sql = "INSERT INTO account(phone,name, password,orderNum)"
+					+ " VALUES (" + phone + "," + "null" + ",'" + password
+					+ "'," + "0)"; //
+			System.out.println(sql);
 			st = (Statement) conn.createStatement(); //
 			int count = st.executeUpdate(sql); //
 			if (count == 0)
 				return false;
 			else if (count == 1)
 				return true;
-			conn.close(); 
+			conn.close();
 		} catch (SQLException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
+		DataChangeManager.getDataManager().DataIseart();
 		return false;
 	}
 
@@ -94,25 +110,25 @@ public class JDBC {
 				can.setLongitude(rs.getFloat("y"));
 				list.add(can);
 			}
-			conn.close(); 
+			conn.close();
 		} catch (SQLException e) {
 			System.out.println(ERROR);
 		}
 		JSONArray jsonObj1 = JSONArray.fromObject(list);
 		return jsonObj1;
 	}
-	
-	
+
 	public static JSONArray getFoodList(String phone) {
 		List list = new ArrayList();
 		conn = getConnection();
 		try {
-			String sql = "SELECT * FROM  food where canteenPhone='"+phone+"'";
+			String sql = "SELECT * FROM  food where canteenPhone='" + phone
+					+ "'";
 			st = (Statement) conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
 			while (rs.next()) {
 				FoodInfo food = new FoodInfo();
-				
+
 				food.setFoodId(rs.getInt("foodid"));
 				food.setCanteenPhone(rs.getString("canteenPhone"));
 				food.setName(rs.getString("name"));
@@ -120,66 +136,74 @@ public class JDBC {
 				food.setStarNum(rs.getInt("foodid"));
 				food.setMonthSale(rs.getInt("monthSale"));
 				food.setPrice(rs.getDouble("price"));
-				
-				
+
 				list.add(food);
 			}
-			conn.close(); 
+			conn.close();
 		} catch (SQLException e) {
-			System.out.println(ERROR+e.getMessage());
+			System.out.println(ERROR + e.getMessage());
 		}
 		JSONArray jsonObj1 = JSONArray.fromObject(list);
 		return jsonObj1;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+	public static boolean insertOrderFood(int foodId, int orderNum) {
+		conn = getConnection();
+		// rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+		try {
+			String sql = "INSERT INTO orderfood(foodID,num)" + " VALUES ("
+					+ foodId + "," + orderNum + ")";
+			System.out.println(sql);
+			st = (Statement) conn.createStatement(); //
+			int count = st.executeUpdate(sql); //
+			if (count == 0)
+				return false;
+			else if (count == 1)
+				return true;
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR + e.getMessage());
+		}
+		DataChangeManager.getDataManager().DataIseart();
+		return false;
+	}
+
+	public static boolean insertOrder(String canteenPhone, String accountPhone) {
+		conn = getConnection();
+		// rs = stmt.executeQuery("SELECT LAST_INSERT_ID()");
+		try {
+			String sql = "INSERT INTO order(canteenPhone,accountPhone)"
+					+ " VALUES (" + canteenPhone + "," + accountPhone + ")";
+			System.out.println(sql);
+			st = (Statement) conn.createStatement(); //
+			int count = st.executeUpdate(sql); //
+			if (count == 0)
+				return false;
+			else if (count == 1)
+				return true;
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR + e.getMessage());
+		}
+		DataChangeManager.getDataManager().DataIseart();
+		return false;
+	}
 
 	public static void insert() {
 
-		conn = getConnection(); 
+		conn = getConnection();
 
 		try {
 			String sql = "INSERT INTO staff(ID,name, age)"
 					+ " VALUES (12,'Tom1', 32)";
 
-			st = (Statement) conn.createStatement(); 
+			st = (Statement) conn.createStatement();
 
-			int count = st.executeUpdate(sql); 
+			int count = st.executeUpdate(sql);
 
 			System.out.println("��staff���в��� " + count + " �����");
 
-			conn.close(); 
+			conn.close();
 
 		} catch (SQLException e) {
 			System.out.println(ERROR + e.getMessage());
@@ -187,15 +211,15 @@ public class JDBC {
 	}
 
 	public static void update() {
-		conn = getConnection(); 
+		conn = getConnection();
 		try {
 			String sql = "update staff set wage='2200' where name = 'lucy'";
 
-			st = (Statement) conn.createStatement(); 
+			st = (Statement) conn.createStatement();
 
 			int count = st.executeUpdate(sql);
 
-			System.out.println("staf" + count + " �����"); 
+			System.out.println("staf" + count + " �����");
 
 			conn.close(); //
 
@@ -206,12 +230,12 @@ public class JDBC {
 
 	public static void query() {
 
-		conn = getConnection(); 
+		conn = getConnection();
 		try {
-			String sql = "select * from staff"; 
-			st = (Statement) conn.createStatement(); 
+			String sql = "select * from staff";
+			st = (Statement) conn.createStatement();
 
-			ResultSet rs = st.executeQuery(sql); 
+			ResultSet rs = st.executeQuery(sql);
 
 			while (rs.next()) {
 				String name = rs.getString("name");
@@ -221,14 +245,12 @@ public class JDBC {
 				String depart = rs.getString("depart");
 				String worklen = rs.getString("worklen");
 				String wage = rs.getString("wage");
-						
-						
-						
+
 				System.out.println(name + " " + age + " " + sex + " " + address
 						+ " " + depart + " " + worklen + " " + wage);
 
 			}
-			conn.close(); 
+			conn.close();
 
 		} catch (SQLException e) {
 			System.out.println(ERROR);
@@ -237,16 +259,16 @@ public class JDBC {
 
 	public static void delete() {
 
-		conn = getConnection(); 
+		conn = getConnection();
 		try {
 			String sql = "delete from staff  where name = 'lili'";
-			st = (Statement) conn.createStatement(); 
+			st = (Statement) conn.createStatement();
 
 			int count = st.executeUpdate(sql);
 
-			System.out.println("staff����ɾ�� " + count + " �����\n"); 
+			System.out.println("staff����ɾ�� " + count + " �����\n");
 
-			conn.close(); 
+			conn.close();
 
 		} catch (SQLException e) {
 			System.out.println("ɾ�����ʧ��");
@@ -280,6 +302,5 @@ public class JDBC {
 		}
 		return conn; //
 	}
-
 
 }

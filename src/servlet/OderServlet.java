@@ -12,10 +12,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.sound.sampled.AudioFormat.Encoding;
 
+import music.MusicPlay;
+
 import database.JDBC;
 
 
 public class OderServlet extends HttpServlet {
+	
+	
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -23,7 +27,6 @@ public class OderServlet extends HttpServlet {
 		response.setContentType("text/html");
 	    response.setCharacterEncoding("utf-8");
 		super.doPost(request, response);
-
 		
 		String tempStr=request.getQueryString();
 		System.out.println("doPost"+tempStr);
@@ -32,7 +35,7 @@ public class OderServlet extends HttpServlet {
 		String tag=URLDecoder.decode(jsonString,"Utf-8");
 		System.out.println(tag);
 		
-		
+		MusicPlay.playOrder();
 	}
 
 	
