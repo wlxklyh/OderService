@@ -11,6 +11,7 @@ public class FoodInfo {
 	private int starNum;
 	private int monthSale;
 	private double price;
+	
 	public int getFoodId() {
 		return foodId;
 	}

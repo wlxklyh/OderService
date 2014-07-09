@@ -16,55 +16,58 @@ import net.sf.json.JSONObject;
 
 import data.CanteenInfo;
 import data.FoodInfo;
+import data.OrderList;
 
 public class JDBC {
 	private static final String DATABASE_ODER = "food_order";
 
-/*	private static final String TABLE_ACCOUNT = "account";
-	private static final String TABLE_CANTEEN = "canteen";
-	private static final String TABLE_ODER = "order";
-	private static final String TABLE_FOOD = "food";
-	private static final String TABLE_ODERFOOD = "orderfood";*/
+	/*
+	 * private static final String TABLE_ACCOUNT = "account"; private static
+	 * final String TABLE_CANTEEN = "canteen"; private static final String
+	 * TABLE_ODER = "order"; private static final String TABLE_FOOD = "food";
+	 * private static final String TABLE_ODERFOOD = "orderfood";
+	 */
 
 	private final static String ERROR = "数据库出现错误";
 	static Connection conn;
 	static Statement st;
 
 	public static void main(String[] args) throws UnsupportedEncodingException {
-//		String str = "[{\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderNum\":2},{\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":3,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderNum\":0}]";
-//		JSONArray jsonArray = JSONArray.fromObject(str);
-//		for (int i = 0; i < jsonArray.size(); i++) {
-//			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-//			if (i == 0) {
-//				insertOrder(jsonObject.getString("canteenPhone"), "");
-//			}
-//			if (jsonObject.getInt("orderNum") > 0) {
-//				insertOrderFood(jsonObject.getInt("foodId"),
-//						jsonObject.getInt("orderNum"));
-//			}
-//			System.out.println("" + jsonObject);
-//		}
-		
+		// String str =
+		// "[{\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderNum\":2},{\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":3,\"canteenPhone\":\"13546899774\",\"orderNum\":0},{\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderNum\":0}]";
+		// JSONArray jsonArray = JSONArray.fromObject(str);
+		// for (int i = 0; i < jsonArray.size(); i++) {
+		// JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+		// if (i == 0) {
+		// insertOrder(jsonObject.getString("canteenPhone"), "");
+		// }
+		// if (jsonObject.getInt("orderNum") > 0) {
+		// insertOrderFood(jsonObject.getInt("foodId"),
+		// jsonObject.getInt("orderNum"));
+		// }
+		// System.out.println("" + jsonObject);
+		// }
+
 		String str = "[{\"orderNum\":1,\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":3,\"canteenPhone\":\"13"
-		+"546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"}]";
+				+ "546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"}]";
 		JSONArray jsonArray = JSONArray.fromObject(str);
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 			String accountPhone = jsonObject.getString("accountPhone");
 			String orderID = jsonObject.getString("orderId");
-			
+
 			if (i == 0) {
-				insertOrder(jsonObject.getString("canteenPhone"), accountPhone,orderID);
+				insertOrder(jsonObject.getString("canteenPhone"), accountPhone,
+						orderID);
 			}
 			if (jsonObject.getInt("orderNum") > 0) {
 				insertOrderFood(jsonObject.getInt("foodId"),
-						jsonObject.getInt("orderNum"),orderID);
+						jsonObject.getInt("orderNum"), orderID);
 			}
 			System.out.println("" + jsonObject);
 		}
 
 	}
-	
 
 	public static String queryAccountPassword(String phone) {
 		conn = getConnection();
@@ -83,14 +86,14 @@ public class JDBC {
 
 		return result;
 	}
-	
-	//没有返回0，有返回非零
+
+	// 没有返回0，有返回非零
 	public static int queryCanteenAccountPassword(String phone, String passwd) {
 		conn = getConnection();
 		int result = 0;
 		try {
-			String sql = "SELECT * FROM  canteen where phone = '" + 
-					phone + "' and passwd = '" + passwd +"'";
+			String sql = "SELECT * FROM  canteen where phone = '" + phone
+					+ "' and passwd = '" + passwd + "'";
 			st = (Statement) conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
 			if (rs.next()) {
@@ -103,12 +106,12 @@ public class JDBC {
 		return result;
 	}
 
-	//给定餐厅电话，返回餐厅信息，除了密码
+	// 给定餐厅电话，返回餐厅信息，除了密码
 	public static CanteenInfo getCanteenInfo(String phone) {
 		conn = getConnection();
 		CanteenInfo can = new CanteenInfo();
 		try {
-			String sql = "SELECT * FROM  canteen where phone = '" + phone +"'";
+			String sql = "SELECT * FROM  canteen where phone = '" + phone + "'";
 			st = (Statement) conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
 			if (rs.next()) {
@@ -125,13 +128,13 @@ public class JDBC {
 		}
 		return can;
 	}
-	
+
 	public static boolean accountRegister(String phone, String password) {
 		conn = getConnection();
 		try {
 			String sql = "INSERT INTO account(phone,name, password,orderNum)"
 					+ " VALUES (" + phone + "," + "null" + ",'" + password
-					+ "'," + "0)"; 
+					+ "'," + "0)";
 			System.out.println(sql);
 			st = (Statement) conn.createStatement(); //
 			int count = st.executeUpdate(sql); //
@@ -146,55 +149,59 @@ public class JDBC {
 		return false;
 	}
 
-	//0表示不存在这样的用户，-1表示修改密码失败，1表示成功
-	public static int modifyUserPasswd(String phone, String oldPasswd, String newPasswd){
+	// 0表示不存在这样的用户，-1表示修改密码失败，1表示成功
+	public static int modifyUserPasswd(String phone, String oldPasswd,
+			String newPasswd) {
 		conn = getConnection();
 		try {
-			String sql = "select * from account where phone='" + phone + 
-					"' and password='" + oldPasswd +"'";
+			String sql = "select * from account where phone='" + phone
+					+ "' and password='" + oldPasswd + "'";
 			System.out.println(sql);
 			st = (Statement) conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
-			if(!rs.next()){
+			if (!rs.next()) {
 				return -1;
 			}
-			sql = "update account set password='" + newPasswd + "' where phone='" + phone +"'";
-			st = (Statement)conn.createStatement();
+			sql = "update account set password='" + newPasswd
+					+ "' where phone='" + phone + "'";
+			st = (Statement) conn.createStatement();
 			int count = st.executeUpdate(sql); //
 			if (count == 0)
 				return 0;
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
 		return 1;
 	}
-	
-	public static int modifyCanteenPasswd(String phone, String oldPasswd, String newPasswd){
+
+	public static int modifyCanteenPasswd(String phone, String oldPasswd,
+			String newPasswd) {
 		conn = getConnection();
 		try {
-			String sql = "select * from canteen where phone='" + phone + 
-					"' and passwd='" + oldPasswd +"'";
+			String sql = "select * from canteen where phone='" + phone
+					+ "' and passwd='" + oldPasswd + "'";
 			System.out.println(sql);
 			st = (Statement) conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
-			if(!rs.next()){
+			if (!rs.next()) {
 				return -1;
 			}
-			sql = "update canteen set passwd='" + newPasswd + "' where phone='" + phone +"'";
-			st = (Statement)conn.createStatement();
+			sql = "update canteen set passwd='" + newPasswd + "' where phone='"
+					+ phone + "'";
+			st = (Statement) conn.createStatement();
 			int count = st.executeUpdate(sql);
 			if (count == 0)
 				return 0;
-			
+
 			conn.close();
 		} catch (SQLException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
 		return 1;
 	}
-	
+
 	public static JSONArray getCanteenList() {
 		List<CanteenInfo> list = new ArrayList<CanteenInfo>();
 		conn = getConnection();
@@ -219,7 +226,7 @@ public class JDBC {
 		return jsonObj1;
 	}
 
-	//获取餐厅的食物列表
+	// 获取餐厅的食物列表
 	public static JSONArray getFoodList(String phone) {
 		List<FoodInfo> list = new ArrayList<FoodInfo>();
 		conn = getConnection();
@@ -249,11 +256,41 @@ public class JDBC {
 		return jsonObj1;
 	}
 
-	public static boolean insertOrderFood(int foodId, int orderNum,String OrderId) {
+	// 获取餐厅的订单列表
+	public static JSONArray getOrderList(String phone) {
+		List<OrderList> list = new ArrayList<OrderList>();
 		conn = getConnection();
 		try {
-			String sql = "INSERT INTO orderfood(foodID,num,OrderID)" + " VALUES ("
-					+ foodId + "," + orderNum +","+ OrderId+")";
+			String sql = "SELECT order.orderId, food.name, order.status, orderfood.num" +
+					" FROM  canteen, food, order, orderfood where canteen.phone='" + phone
+					+ "' and food.canteenphone=canteen.phone and order.orderId=orderfood.orderId" +
+					" and orderfood.foodid=food.foodid order by orderId DESC";
+			st = (Statement) conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			while (rs.next()) {
+				OrderList order = new OrderList();
+				order.setOrderId(rs.getString(1));
+				order.setFoodName(rs.getString(2));
+				order.setStatus(rs.getString(3));
+				order.setNum(rs.getInt(4));
+				
+				list.add(order);
+			}
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR + e.getMessage());
+		}
+		JSONArray jsonObj1 = JSONArray.fromObject(list);
+		return jsonObj1;
+	}
+
+	public static boolean insertOrderFood(int foodId, int orderNum,
+			String OrderId) {
+		conn = getConnection();
+		try {
+			String sql = "INSERT INTO orderfood(foodID,num,OrderID)"
+					+ " VALUES (" + foodId + "," + orderNum + "," + OrderId
+					+ ")";
 			System.out.println(sql);
 			st = (Statement) conn.createStatement(); //
 			int count = st.executeUpdate(sql); //
@@ -268,17 +305,23 @@ public class JDBC {
 		return false;
 	}
 
-	public static boolean  insertOrder(String canteenPhone, String accountPhone, String orderId) {
+	public static boolean insertOrder(String canteenPhone, String accountPhone,
+			String orderId) {
 		conn = getConnection();
 		try {
 			String sql = "INSERT INTO `order`(`accountPhone`, `canteentPhone`, `orderID`)"
-					+ " VALUES (" + canteenPhone + "," + accountPhone +"," + orderId + ")";
+					+ " VALUES ("
+					+ canteenPhone
+					+ ","
+					+ accountPhone
+					+ ","
+					+ orderId + ")";
 			System.out.println(sql);
 			st = (Statement) conn.createStatement();
 			int count = st.executeUpdate(sql);
 			if (count == 0)
 				return false;
-			else if (count == 1){
+			else if (count == 1) {
 				DataChangeManager.getDataManager().DataIseart();
 				return true;
 			}
@@ -288,9 +331,7 @@ public class JDBC {
 		}
 		return false;
 	}
-	
-	
-	
+
 	public static void insert() {
 
 		conn = getConnection();
