@@ -44,12 +44,18 @@ public class CanteenInfo {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
+	public String getPasswd() {
+		return passwd;
+	}
 
-
+	public void setPasswd(String passwd) {
+		this.passwd = passwd;
+	}
+	
 	public String name;
 	public String phone;
 	public double latitude;				//¾«¶È
 	public double longitude;				//Î³¶È
-	
+	public String passwd;
 	
 }

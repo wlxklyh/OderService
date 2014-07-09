@@ -111,6 +111,29 @@ public class JDBC {
 		return result;
 	}
 
+	//给定餐厅电话，返回餐厅信息，除了密码
+	public static CanteenInfo getCanteenInfo(String phone) {
+		conn = getConnection();
+		CanteenInfo can = new CanteenInfo();
+		try {
+			String sql = "SELECT * FROM  canteen where phone = '" + phone;
+			st = (Statement) conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if (rs.next()) {
+				can.setPhone(rs.getString("phone"));
+				can.setName(rs.getString("name"));
+				System.out.println(rs.getString("name"));
+				can.setLatitude(rs.getFloat("x"));
+				can.setLongitude(rs.getFloat("y"));
+				can.setPasswd(rs.getString("passwd"));
+			}
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR);
+		}
+		return can;
+	}
+	
 	public static boolean accountRegister(String phone, String password) {
 		conn = getConnection();
 		try {
