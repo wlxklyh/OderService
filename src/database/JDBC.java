@@ -1,25 +1,17 @@
 package database;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import store.DataChangeManager;
-import sun.audio.AudioPlayer;
-import sun.audio.AudioStream;
 
 import net.sf.json.JSONArray;
-import net.sf.json.JSONFunction;
 import net.sf.json.JSONObject;
 
 import data.CanteenInfo;
@@ -28,11 +20,11 @@ import data.FoodInfo;
 public class JDBC {
 	private static final String DATABASE_ODER = "food_order";
 
-	private static final String TABLE_ACCOUNT = "account";
+/*	private static final String TABLE_ACCOUNT = "account";
 	private static final String TABLE_CANTEEN = "canteen";
 	private static final String TABLE_ODER = "order";
 	private static final String TABLE_FOOD = "food";
-	private static final String TABLE_ODERFOOD = "orderfood";
+	private static final String TABLE_ODERFOOD = "orderfood";*/
 
 	private final static String ERROR = "数据库出现错误";
 	static Connection conn;
@@ -116,7 +108,7 @@ public class JDBC {
 		conn = getConnection();
 		CanteenInfo can = new CanteenInfo();
 		try {
-			String sql = "SELECT * FROM  canteen where phone = '" + phone;
+			String sql = "SELECT * FROM  canteen where phone = '" + phone +"'";
 			st = (Statement) conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
 			if (rs.next()) {
@@ -129,7 +121,7 @@ public class JDBC {
 			}
 			conn.close();
 		} catch (SQLException e) {
-			System.out.println(ERROR);
+			e.printStackTrace();
 		}
 		return can;
 	}
@@ -151,12 +143,60 @@ public class JDBC {
 		} catch (SQLException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
-		DataChangeManager.getDataManager().DataIseart();
 		return false;
 	}
 
+	//0表示不存在这样的用户，-1表示修改密码失败，1表示成功
+	public static int modifyUserPasswd(String phone, String oldPasswd, String newPasswd){
+		conn = getConnection();
+		try {
+			String sql = "select * from account where phone='" + phone + 
+					"' and password='" + oldPasswd +"'";
+			System.out.println(sql);
+			st = (Statement) conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(!rs.next()){
+				return -1;
+			}
+			sql = "update account set password='" + newPasswd + "' where phone='" + phone +"'";
+			st = (Statement)conn.createStatement();
+			int count = st.executeUpdate(sql); //
+			if (count == 0)
+				return 0;
+			
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR + e.getMessage());
+		}
+		return 1;
+	}
+	
+	public static int modifyCanteenPasswd(String phone, String oldPasswd, String newPasswd){
+		conn = getConnection();
+		try {
+			String sql = "select * from canteen where phone='" + phone + 
+					"' and passwd='" + oldPasswd +"'";
+			System.out.println(sql);
+			st = (Statement) conn.createStatement();
+			ResultSet rs = st.executeQuery(sql);
+			if(!rs.next()){
+				return -1;
+			}
+			sql = "update canteen set passwd='" + newPasswd + "' where phone='" + phone +"'";
+			st = (Statement)conn.createStatement();
+			int count = st.executeUpdate(sql);
+			if (count == 0)
+				return 0;
+			
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR + e.getMessage());
+		}
+		return 1;
+	}
+	
 	public static JSONArray getCanteenList() {
-		List list = new ArrayList();
+		List<CanteenInfo> list = new ArrayList<CanteenInfo>();
 		conn = getConnection();
 		try {
 			String sql = "SELECT * FROM  canteen";
@@ -179,8 +219,9 @@ public class JDBC {
 		return jsonObj1;
 	}
 
+	//获取餐厅的食物列表
 	public static JSONArray getFoodList(String phone) {
-		List list = new ArrayList();
+		List<FoodInfo> list = new ArrayList<FoodInfo>();
 		conn = getConnection();
 		try {
 			String sql = "SELECT * FROM  food where canteenPhone='" + phone
@@ -224,7 +265,6 @@ public class JDBC {
 		} catch (SQLException e) {
 			System.out.println(ERROR + e.getMessage());
 		}
-		DataChangeManager.getDataManager().DataIseart();
 		return false;
 	}
 
@@ -248,11 +288,6 @@ public class JDBC {
 		}
 		return false;
 	}
-
-	
-	
-	
-	
 	
 	
 	
