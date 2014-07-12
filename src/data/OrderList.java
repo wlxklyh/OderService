@@ -5,6 +5,8 @@ public class OrderList {
 	String foodName;
 	String status;
 	int num;
+	double price;
+	
 	public String getOrderId() {
 		return orderId;
 	}
@@ -28,6 +30,12 @@ public class OrderList {
 	}
 	public void setNum(int num) {
 		this.num = num;
+	}
+	public double getPrice() {
+		return price;
+	}
+	public void setPrice(double price) {
+		this.price = price;
 	}
 	
 	

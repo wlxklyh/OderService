@@ -1,16 +1,12 @@
 package servlet;
-import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URLDecoder;
-import java.util.ResourceBundle;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sound.sampled.AudioFormat.Encoding;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -23,11 +19,12 @@ import database.JDBC;
 
 
 public class OderServlet extends HttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private  CanteenManager manager;
 	public OderServlet(){
-		manager = CanteenManager.getManager();
-		if(!manager.isVisible())
-			manager.setVisible(true);
 	}
 	
 	@Override
@@ -37,28 +34,24 @@ public class OderServlet extends HttpServlet {
 		response.setContentType("text/html");
 	    response.setCharacterEncoding("utf-8");
 		super.doPost(request, response);
-		
-		String tempStr=request.getQueryString();
-		System.out.println("doPost"+tempStr);
 
 		String jsonString=request.getParameter("jsonString");
 		String str=URLDecoder.decode(jsonString,"Utf-8");
-		System.out.println(str);
+		System.out.println("str = "+str);
 		
 		JSONArray jsonArray = JSONArray.fromObject(str);
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
 			String accountPhone = jsonObject.getString("accountPhone");
 			String orderID = jsonObject.getString("orderId");
-			
 			if (i == 0) {
 				JDBC.insertOrder(jsonObject.getString("canteenPhone"), accountPhone,orderID);
+//				System.out.println("" + jsonObject.getString("orderContent"));
 			}
 			if (jsonObject.getInt("orderNum") > 0) {
 				JDBC.insertOrderFood(jsonObject.getInt("foodId"),
 						jsonObject.getInt("orderNum"),orderID);
 			}
-			System.out.println("" + jsonObject);
 		}
 		
 		
@@ -71,6 +64,14 @@ public class OderServlet extends HttpServlet {
 			throws IOException, ServletException {
 		response.setContentType("text/html");
 	    response.setCharacterEncoding("utf-8");
+		new Thread(){
+			public void run(){
+				manager = CanteenManager.getManager();
+				if(!manager.isVisible())
+					manager.setVisible(true);
+			}
+		}.start();
+		
 		PrintWriter out = response.getWriter();
 		String method = request.getParameter("a");
 		

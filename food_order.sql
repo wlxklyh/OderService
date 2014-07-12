@@ -98,13 +98,13 @@ INSERT INTO `food` VALUES (1,'13546899774','红烧肉','红烧肉是热菜菜谱
 UNLOCK TABLES;
 
 --
--- Table structure for table `order`
+-- Table structure for table `oder`
 --
 
-DROP TABLE IF EXISTS `order`;
+DROP TABLE IF EXISTS `oder`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `order` (
+CREATE TABLE `oder` (
   `orderID` varchar(20) NOT NULL,
   `accountPhone` varchar(20) NOT NULL,
   `canteentPhone` varchar(20) NOT NULL,
@@ -117,7 +117,7 @@ CREATE TABLE `order` (
 -- Dumping data for table `order`
 --
 
-LOCK TABLES `order` WRITE;
+LOCK TABLES `oder` WRITE;
 /*!40000 ALTER TABLE `order` DISABLE KEYS */;
 /*!40000 ALTER TABLE `order` ENABLE KEYS */;
 UNLOCK TABLES;

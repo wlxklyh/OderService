@@ -48,24 +48,27 @@ public class JDBC {
 		// System.out.println("" + jsonObject);
 		// }
 
-		String str = "[{\"orderNum\":1,\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":3,\"canteenPhone\":\"13"
-				+ "546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"}]";
-		JSONArray jsonArray = JSONArray.fromObject(str);
-		for (int i = 0; i < jsonArray.size(); i++) {
-			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-			String accountPhone = jsonObject.getString("accountPhone");
-			String orderID = jsonObject.getString("orderId");
-
-			if (i == 0) {
-				insertOrder(jsonObject.getString("canteenPhone"), accountPhone,
-						orderID);
-			}
-			if (jsonObject.getInt("orderNum") > 0) {
-				insertOrderFood(jsonObject.getInt("foodId"),
-						jsonObject.getInt("orderNum"), orderID);
-			}
-			System.out.println("" + jsonObject);
-		}
+//		String str = "[{\"orderNum\":1,\"foodId\":1,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":2,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":3,\"canteenPhone\":\"13"
+//				+ "546899774\",\"orderId\":\"11469144236\"},{\"orderNum\":0,\"foodId\":4,\"canteenPhone\":\"13546899774\",\"orderId\":\"11469144236\"}]";
+//		JSONArray jsonArray = JSONArray.fromObject(str);
+//		for (int i = 0; i < jsonArray.size(); i++) {
+//			JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+//			String accountPhone = jsonObject.getString("accountPhone");
+//			String orderID = jsonObject.getString("orderId");
+//
+//			if (i == 0) {
+//				insertOrder(jsonObject.getString("canteenPhone"), accountPhone,
+//						orderID);
+//			}
+//			if (jsonObject.getInt("orderNum") > 0) {
+//				insertOrderFood(jsonObject.getInt("foodId"),
+//						jsonObject.getInt("orderNum"), orderID);
+//			}
+//			System.out.println("" + jsonObject);
+//		}
+		
+		
+		getOrderList("15784955887");
 
 	}
 
@@ -149,6 +152,24 @@ public class JDBC {
 		return false;
 	}
 
+	//修改订单状态
+	public static int modifyOrderStatus(String orderId, String status) {
+		conn = getConnection();
+		try {
+			String sql = "update oder set status='" + status
+					+ "' where orderid='" + orderId + "'";
+			st = (Statement) conn.createStatement();
+			int count = st.executeUpdate(sql); //
+			if (count == 0)
+				return 0;
+
+			conn.close();
+		} catch (SQLException e) {
+			System.out.println(ERROR + e.getMessage());
+		}
+		return 1;
+	}
+	
 	// 0表示不存在这样的用户，-1表示修改密码失败，1表示成功
 	public static int modifyUserPasswd(String phone, String oldPasswd,
 			String newPasswd) {
@@ -261,10 +282,11 @@ public class JDBC {
 		List<OrderList> list = new ArrayList<OrderList>();
 		conn = getConnection();
 		try {
-			String sql = "SELECT order.orderId, food.name, order.status, orderfood.num" +
-					" FROM  canteen, food, order, orderfood where canteen.phone='" + phone
-					+ "' and food.canteenphone=canteen.phone and order.orderId=orderfood.orderId" +
+			String sql = "SELECT oder.orderId, food.name , oder.status, orderfood.num, food.price " +
+					" from oder, food, orderfood where food.canteenphone='" + phone
+					+ "'  and oder.orderId=orderfood.orderId" +
 					" and orderfood.foodid=food.foodid order by orderId DESC";
+			System.out.println(sql);
 			st = (Statement) conn.createStatement();
 			ResultSet rs = st.executeQuery(sql);
 			while (rs.next()) {
@@ -273,11 +295,14 @@ public class JDBC {
 				order.setFoodName(rs.getString(2));
 				order.setStatus(rs.getString(3));
 				order.setNum(rs.getInt(4));
+				order.setPrice(rs.getDouble(5));
 				
+				System.out.println(order.toString());
 				list.add(order);
 			}
 			conn.close();
 		} catch (SQLException e) {
+			e.printStackTrace();
 			System.out.println(ERROR + e.getMessage());
 		}
 		JSONArray jsonObj1 = JSONArray.fromObject(list);
@@ -309,7 +334,7 @@ public class JDBC {
 			String orderId) {
 		conn = getConnection();
 		try {
-			String sql = "INSERT INTO `order`(`accountPhone`, `canteentPhone`, `orderID`)"
+			String sql = "INSERT INTO `oder`(`accountPhone`, `canteentPhone`, `orderID`)"
 					+ " VALUES ("
 					+ canteenPhone
 					+ ","
@@ -327,7 +352,7 @@ public class JDBC {
 			}
 			conn.close();
 		} catch (SQLException e) {
-			System.out.println(ERROR + e.getMessage());
+			e.printStackTrace();
 		}
 		return false;
 	}
